@@ -1,0 +1,44 @@
+!pip install numpy
+import numpy as np;
+import matplotlib.pyplot as plt;
+import tensorflow as tf;
+import tensorflow_datasets as tfds;
+#the simplest neural network we can build
+model=tf.keras.Sequential([
+    tf.keras.Input(shape=(1,)),
+    tf.keras.layers.Dense(units=1)
+])
+fmnist=tf.keras.datasets.fashion_mnist;
+(training_images, training_labels), (test_images, test_labels)= fmnist.load_data();
+print(np.max(training_images))
+np.unique(training_labels)
+index=40;
+np.set_printoptions(linewidth=320);
+print(f'label :{training_labels[index]}');
+maximus=(np.max(training_images));
+print(f'\nIMAGE PIXEL ARRAY :\n\n {training_images[index]}\n\n');
+
+plt.imshow(training_images[index])
+plt.colorbar()
+plt.show()
+
+#the neural network will learn better if the values are between o and 1
+
+training_images=training_images/maximus
+test_images=test_images/maximus
+
+#build classification model
+model=tf.keras.models.Sequential([
+    tf.keras.Input(shape=(28,28)),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(128, activation= tf.nn.relu),
+    tf.keras.layers.Dense(10, activation=tf.nn.softmax),
+])
+
+model.compile(optimizer=tf.optimizers.Adam(),
+              loss= 'sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(training_images,training_labels,epochs=5)
+
+model.evaluate(test_images,test_labels)
